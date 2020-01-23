@@ -13,8 +13,8 @@ class Uninstaller:
         self.base_directory = base_directory
         self.plugin_dir = join_path(self.base_directory, "warrior", "plugins")
         self.app_dir = join_path(self.base_directory, "katana", app_type)
-        self.settings_file = join_path(self.base_directory, "katana", "katana.wui", "settings.py")
-        self.urls_file = join_path(self.base_directory, "katana", "katana.wui", "urls.py")
+        self.settings_file = join_path(self.base_directory, "katana", "wui", "settings.py")
+        self.urls_file = join_path(self.base_directory, "katana", "wui", "urls.py")
         self.app_path = get_abs_path(self.app_name, self.app_dir)
         self.app_type = app_type
         self.config_file = join_path(self.app_path, "wf_config.json")
@@ -65,7 +65,7 @@ class Uninstaller:
         return plugins
 
     def __get_setting_file_info(self):
-        return "{0}.{1}".format(self.app_type, self.app_name.replace(sep, "."))
+        return "{0}.{1}.{2}".format("katana",self.app_type, self.app_name.replace(sep, "."))
 
     def __get_urls_info(self):
         include = []
