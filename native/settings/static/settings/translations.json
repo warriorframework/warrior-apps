@@ -39,7 +39,7 @@
         {
             "key": "pythonsrcdir",
             "toolTip": "current location of the warrior framework dir",
-            "translateTo": "Location of Warrior"
+            "translateTo": "Location of Warrior Testcase Repository"
         },
         {
             "key": "userreposdir",

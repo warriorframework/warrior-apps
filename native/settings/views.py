@@ -19,11 +19,14 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from katana.native.settings.settings import Settings
 from katana.utils.navigator_util import Navigator
+from katana.utils.json_utils import read_json_data
 import ast
+import json
 
 nav_obj = Navigator()
 REF_FILE = os.path.join(nav_obj.get_katana_dir(), "katana.native", "assembler", "static", "assembler",
                         "base_templates", "empty.xml")
+config_json_path = os.path.join(nav_obj.get_katana_dir(),"config.json")
 
 controls = Settings()
 
@@ -70,3 +73,95 @@ def validate_input_repo(request):
 
 def myajaxtestview(request):
     return HttpResponse(request.POST['text'])
+
+def populate_paths(request):
+    print("populating...")
+    returned_json = read_json_data(config_json_path)
+    if os.path.isdir(returned_json["pythonsrcdir"]):
+        if returned_json["pythonsrcdir"].split("/")[-1] == "Warriorspace" or returned_json["pythonsrcdir"].split("/")[-2] == "Warriorspace":
+            child_dirs = os.listdir(returned_json["pythonsrcdir"])
+            if "Testcases" in child_dirs:
+                returned_json["xmldir"] = returned_json["pythonsrcdir"] + "/Testcases"
+            else:
+                os.mkdir(returned_json["pythonsrcdir"] + "/Testcases")
+                returned_json["xmldir"] = (returned_json["pythonsrcdir"] + "/Testcases")
+            
+            if "Suites" in child_dirs:
+                returned_json["testsuitedir"] = returned_json["pythonsrcdir"] + "/Suites"
+            else:
+                os.mkdir(returned_json["pythonsrcdir"] + "/Suites")
+                returned_json["testsuitedir"] = (returned_json["pythonsrcdir"] + "/Suites")
+            
+            if "Projects" in child_dirs:
+                returned_json["projdir"] = returned_json["pythonsrcdir"] + "/Projects"
+            else:
+                os.mkdir(returned_json["pythonsrcdir"] + "/Projects")
+                returned_json["projdir"] = (returned_json["pythonsrcdir"] + "/Projects")
+            
+            if "Data" in child_dirs:
+                returned_json["idfdir"] = returned_json["pythonsrcdir"] + "/Data"
+            else:
+                os.mkdir(returned_json["pythonsrcdir"] + "/Data")
+                returned_json["idfdir"] = (returned_json["pythonsrcdir"] + "/Data")
+
+            if "Config_files" in child_dirs:
+                returned_json["testdata"] = returned_json["pythonsrcdir"] + "/Config_files"
+            else:
+                os.mkdir(returned_json["pythonsrcdir"] + "/Config_files")
+                returned_json["testdata"] = (returned_json["pythonsrcdir"] + "/Config_files")
+
+            if "wrapper_files" in child_dirs:
+                returned_json["testwrapper"] = returned_json["pythonsrcdir"] + "/wrapper_files"
+            else:
+                os.mkdir(returned_json["pythonsrcdir"] + "/wrapper_files")
+                returned_json["testwrapper"] = (returned_json["pythonsrcdir"] + "/wrapper_files")
+        else:
+            base_tree = os.listdir(returned_json["pythonsrcdir"])
+            if "Warriorspace" in base_tree:
+                child_dirs = os.listdir(returned_json["pythonsrcdir"])
+                if "Testcases" in child_dirs:
+                    returned_json["xmldir"] = returned_json["pythonsrcdir"] + "/Testcases"
+                else:
+                    os.mkdir(returned_json["pythonsrcdir"] + "/Testcases")
+                    returned_json["xmldir"] = (returned_json["pythonsrcdir"] + "/Testcases")
+            
+                if "Suites" in child_dirs:
+                    returned_json["testsuitedir"] = returned_json["pythonsrcdir"] + "/Suites"
+                else:
+                    os.mkdir(returned_json["pythonsrcdir"] + "/Suites")
+                    returned_json["testsuitedir"] = (returned_json["pythonsrcdir"] + "/Suites")
+                
+                if "Projects" in child_dirs:
+                    returned_json["projdir"] = returned_json["pythonsrcdir"] + "/Projects"
+                else:
+                    os.mkdir(returned_json["pythonsrcdir"] + "/Projects")
+                    returned_json["projdir"] = (returned_json["pythonsrcdir"] + "/Projects")
+            
+                if "Data" in child_dirs:
+                    returned_json["idfdir"] = returned_json["pythonsrcdir"] + "/Data"
+                else:
+                    os.mkdir(returned_json["pythonsrcdir"] + "/Data")
+                    returned_json["idfdir"] = (returned_json["pythonsrcdir"] + "/Data")
+
+                if "Config_files" in child_dirs:
+                    returned_json["testdata"] = returned_json["pythonsrcdir"] + "/Config_files"
+                else:
+                    os.mkdir(returned_json["pythonsrcdir"] + "/Config_files")
+                    returned_json["testdata"] = (returned_json["pythonsrcdir"] + "/Config_files")
+                if "wrapper_files" in child_dirs:
+                    returned_json["testwrapper"] = returned_json["pythonsrcdir"] + "/wrapper_files"
+                else:
+                    os.mkdir(returned_json["pythonsrcdir"] + "/wrapper_files")
+                    returned_json["testwrapper"] = (returned_json["pythonsrcdir"] + "/wrapper_files")
+            else:
+                if "Testcases" in base_tree or "Suites" in base_tree or "Data" in base_tree or "wrapper_files" in base_tree or "Config_files" in base_tree or "Projects" in base_tree or "Execution" in base_tree:
+                    sub_folders = {"Testcases":"xmldir","Suites":"testsuitedir","Projects":"projdir","Data": "idfdir","Config_files":"testdata","wrapper_files":"testwrapper"}
+                    for folder in ["Testcases", "Suites", "Data", "wrapper_files", "Config_files", "Projects"]:
+                        try:
+                            os.mkdir(returned_json["pythonsrcdir"] + "/"+ folder)
+                            returned_json[sub_folders[folder]] = returned_json["pythonsrcdir"] + "/"+ folder
+                        except FileExistsError:
+                            returned_json[sub_folders[folder]] = returned_json["pythonsrcdir"] + "/"+ folder
+    print(returned_json)
+    with open(config_json_path, "w") as f:
+        f.write(json.dumps(returned_json, indent=4))
