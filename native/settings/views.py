@@ -270,7 +270,7 @@ def populate_paths(request):
                 elif element == "Warriorspace":
                     warrior_path = "/Warriorspace"
             if "warriorspace" in [x.lower() for x in base_tree]:
-                child_dirs = os.listdir(returned_json["pythonsrcdir"])
+                child_dirs = os.listdir(returned_json["pythonsrcdir"]+ "/" + warrior_path)
 
                 if "Testcases" in child_dirs:
                     test_case_folder = "Testcases"
