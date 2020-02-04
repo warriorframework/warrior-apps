@@ -75,7 +75,6 @@ def myajaxtestview(request):
     return HttpResponse(request.POST['text'])
 
 def populate_paths(request):
-    print("populating...")
     returned_json = read_json_data(config_json_path)
     if os.path.isdir(returned_json["pythonsrcdir"]):
         if returned_json["pythonsrcdir"].split("/")[-1] == "Warriorspace" or returned_json["pythonsrcdir"].split("/")[-2] == "Warriorspace":
@@ -162,6 +161,12 @@ def populate_paths(request):
                             returned_json[sub_folders[folder]] = returned_json["pythonsrcdir"] + "/"+ folder
                         except FileExistsError:
                             returned_json[sub_folders[folder]] = returned_json["pythonsrcdir"] + "/"+ folder
-    print(returned_json)
+                else:
+                    os.mkdir(returned_json["pythonsrcdir"] + "/Warriorspace")
+                    sub_folders = {"Testcases":"xmldir","Suites":"testsuitedir","Projects":"projdir","Data": "idfdir","Config_files":"testdata","wrapper_files":"testwrapper"}
+                    for folder in ["Testcases", "Suites", "Data", "wrapper_files", "Config_files", "Projects"]:
+                        os.mkdir(returned_json["pythonsrcdir"] + "/Warriorspace/"+ folder)
+                        returned_json[sub_folders[folder]] = returned_json["pythonsrcdir"] + "/Warriorspace/"+ folder
     with open(config_json_path, "w") as f:
         f.write(json.dumps(returned_json, indent=4))
+    return HttpResponse(request)
