@@ -208,202 +208,254 @@ var settings = {
    },
 
     save: function () {
-        nul_flag=0;
+        nul_flag = 0;
         var $elem = this;
         // $elem.removeClass('saved').addClass('loading');
-        inc =$('#get_count_of_ip input').length;
+        inc = $('#get_count_of_ip input').length;
         inc -= 13;
-        var ipfarray=[];
-        ipfarray[0]=$ippref=$("#get_count_of_ip").find("input"+"[key=userreposdir]").val();
-        if (inc){
-        var ipfarray = $("input[category='repo']")
-              .map(function(){return $(this).val();}).get();
-    }
-    function find_duplicate_in_array(ipfarray) {
+        var ipfarray = [];
+        ipfarray[0] = $ippref = $("#get_count_of_ip").find("input" + "[key=userreposdir]").val();
+        if (inc) {
+            var ipfarray = $("input[category='repo']")
+                .map(function () { return $(this).val(); }).get();
+        }
+        function find_duplicate_in_array(ipfarray) {
             var object = {};
             var result = [];
             ipfarray.forEach(function (item) {
-              if(!object[item])
-                  object[item] = 0;
+                if (!object[item])
+                    object[item] = 0;
                 object[item] += 1;
             })
             for (var prop in object) {
-               if(object[prop] >= 2) {
-                   result.push(prop);
-               }
+                if (object[prop] >= 2) {
+                    result.push(prop);
+                }
             }
             return result;
         }
-    fresult = find_duplicate_in_array(ipfarray);
-    null_flag = settings.validatedir(ipfarray);
-    if(null_flag || fresult.length){
-        ipfarray.forEach(function (i) {
-            $ippreff=$("#get_count_of_ip").find("input[value='"+i+"']");
-            $ippreff.css({"border-color":"#dcdcdc"});
-            
-          })
-        fresult.forEach(function (item) {
-            $ippref=$("#get_count_of_ip").find("input[category=repo]").filter("[value='"+item+"']");
-            $ippref.css({"border-color":"red"});
-          })
-
-          katana.openAlert({
-            "alert_type": "danger",
-            "heading": "Invalid Repo path(s)",
-            "text": "It seems like the entered Repo path may be empty or not valid.",
-            "show_cancel_btn": false
-        });
-    
-       }
-       else{
-        $("#get_count_of_ip").find("input").css({"border-color":"#dcdcdc"});
-        katana.templateAPI.post.call(katana.$activeTab.find('.to-save'), null, null, katana.toJSON(), function (data) {
+        fresult = find_duplicate_in_array(ipfarray);
+        null_flag = settings.validatedir(ipfarray);
+        if (null_flag || fresult.length) {
             ipfarray.forEach(function (i) {
-                $ippreff=$("#get_count_of_ip").find("input[value='"+i+"']");
-                $ippreff.css({"border-color":"#dcdcdc"});
-                
-              })
-            $elem.removeClass('loading').addClass('saved');
-        });
-    }
+                $ippreff = $("#get_count_of_ip").find("input[value='" + i + "']");
+                $ippreff.css({ "border-color": "#dcdcdc" });
+
+            })
+            fresult.forEach(function (item) {
+                $ippref = $("#get_count_of_ip").find("input[category=repo]").filter("[value='" + item + "']");
+                $ippref.css({ "border-color": "red" });
+            })
+
+            katana.openAlert({
+                "alert_type": "danger",
+                "heading": "Invalid Repo path(s)",
+                "text": "It seems like the input Repo path may be empty or not valid.",
+                "show_cancel_btn": false
+            });
+
+        }
+        else {
+            $("#get_count_of_ip").find("input").css({"border-color":"#dcdcdc"});
+                katana.templateAPI.post.call(katana.$activeTab.find('.to-save'), null, null, katana.toJSON(), function (data) {
+                    ipfarray.forEach(function (i) {
+                        $ippreff=$("#get_count_of_ip").find("input[value='"+i+"']");
+                        $ippreff.css({"border-color":"#dcdcdc"});
+                        
+                      })
+                    $elem.removeClass('loading').addClass('saved');
+                });
+
+            katana.openAlert({
+                "alert_type": "warning",
+                "sub_heading": "Heads up!",
+                "text": "Do you want Katana to populate the fields for Cases, Suites, Projects, Input Data Files, and TestData file with the default values?",
+                "show_accept_btn": true,
+                "accept_btn_text": "Yes",
+                "show_cancel_btn": true,
+                "cancel_btn_text": "No"
+            },
+
+            function(){
+                $.ajax({
+                    headers: {
+                        'X-CSRFToken': katana.$activeTab.find('input[name="csrfmiddlewaretoken"]').attr('value')
+                    },
+                    type: 'POST',
+                    url: 'settings/populate_paths/',
+                    data: {}
+                }).done(function(data) {
+                    katana.openAlert({
+                        "alert_type": "info",
+                        "heading": "Whew!",
+                        "text": "Settings Updated",
+                        "timer": 1250,
+                        "show_accept_btn": false,
+                        "show_cancel_btn": false
+                    });
+                    // $("#get_count_of_ip").find("input").css({"border-color":"#dcdcdc"});
+                    // katana.templateAPI.post.call(katana.$activeTab.find('.to-save'), null, null, katana.toJSON(), function (data) {
+                    //     ipfarray.forEach(function (i) {
+                    //         $ippreff=$("#get_count_of_ip").find("input[value='"+i+"']");
+                    //         $ippreff.css({"border-color":"#dcdcdc"});
+                            
+                    //       })
+                    //     $elem.removeClass('loading').addClass('saved');
+                    // });
+                });
+            },
+            function () {
+                katana.openAlert({
+                    "alert_type": "info",
+                    "heading": "Whew!",
+                    "text": "Settings Updated",
+                    "timer": 1250,
+                    "show_accept_btn": false,
+                    "show_cancel_btn": false
+                });
+
+            });
+        }
     },
 
-    prerequisites: {
+        prerequisites: {
 
-        init: function () {
-        },
+            init: function () {
+            },
 
-        installDependency: function () {
-            var $elem = $(this);
-            if ($elem.attr('status') === 'install' || $elem.attr('status') === 'upgrade') {
-                $elem.attr('aria-selected', 'true');
-                var $parent = $elem.parent();
-                $elem.hide();
-                $parent.find('br').hide();
-                $parent.find('hr').hide();
-                $parent.find('.card').show();
-            }
-        },
+            installDependency: function () {
+                var $elem = $(this);
+                if ($elem.attr('status') === 'install' || $elem.attr('status') === 'upgrade') {
+                    $elem.attr('aria-selected', 'true');
+                    var $parent = $elem.parent();
+                    $elem.hide();
+                    $parent.find('br').hide();
+                    $parent.find('hr').hide();
+                    $parent.find('.card').show();
+                }
+            },
 
-        cancelDependencyInstallation: function ($elem) {
-            if ($elem === undefined) {
-                $elem = $(this);
-            }
-            var $parent = $elem.closest('.card');
-            var $installBtn = $parent.siblings('button[katana-click="settings.prerequisites.installDependency"]');
-            $installBtn.attr('aria-selected', 'false');
-            $parent.hide();
-            $installBtn.siblings('br').show();
-            $installBtn.siblings('hr').show();
-            $installBtn.show();
-        },
+            cancelDependencyInstallation: function ($elem) {
+                if ($elem === undefined) {
+                    $elem = $(this);
+                }
+                var $parent = $elem.closest('.card');
+                var $installBtn = $parent.siblings('button[katana-click="settings.prerequisites.installDependency"]');
+                $installBtn.attr('aria-selected', 'false');
+                $parent.hide();
+                $installBtn.siblings('br').show();
+                $installBtn.siblings('hr').show();
+                $installBtn.show();
+            },
 
-        installDependencyAsAdmin: function () {
-            var $elem = $(this);
-            var $parentDiv = $elem.closest('.card');
-            var $installBtn = $parentDiv.siblings('button[katana-click="settings.prerequisites.installDependency"]');
-            var data = {
-                "name": $installBtn.attr('prerequisite-name'),
-                "version": $installBtn.attr('version'),
-                "admin": true
-            };
-            $.when(settings.prerequisites.setInstallBtn($installBtn))
-                .then(settings.prerequisites.cancelDependencyInstallation($elem))
-                .then(settings.prerequisites.install(data, $installBtn));
-        },
+            installDependencyAsAdmin: function () {
+                var $elem = $(this);
+                var $parentDiv = $elem.closest('.card');
+                var $installBtn = $parentDiv.siblings('button[katana-click="settings.prerequisites.installDependency"]');
+                var data = {
+                    "name": $installBtn.attr('prerequisite-name'),
+                    "version": $installBtn.attr('version'),
+                    "admin": true
+                };
+                $.when(settings.prerequisites.setInstallBtn($installBtn))
+                    .then(settings.prerequisites.cancelDependencyInstallation($elem))
+                    .then(settings.prerequisites.install(data, $installBtn));
+            },
 
-        installDependencyAsUser: function () {
-            var $elem = $(this);
-            var $parentDiv = $elem.closest('.card');
-            var $installBtn = $parentDiv.siblings('button[katana-click="settings.prerequisites.installDependency"]');
-            var data = {
-                "name": $installBtn.attr('prerequisite-name'),
-                "version": $installBtn.attr('version'),
-                "admin": false
-            };
-            $.when(settings.prerequisites.setInstallBtn($installBtn))
-                .then(settings.prerequisites.cancelDependencyInstallation($elem))
-                .then(settings.prerequisites.install(data, $installBtn));
-        },
+            installDependencyAsUser: function () {
+                var $elem = $(this);
+                var $parentDiv = $elem.closest('.card');
+                var $installBtn = $parentDiv.siblings('button[katana-click="settings.prerequisites.installDependency"]');
+                var data = {
+                    "name": $installBtn.attr('prerequisite-name'),
+                    "version": $installBtn.attr('version'),
+                    "admin": false
+                };
+                $.when(settings.prerequisites.setInstallBtn($installBtn))
+                    .then(settings.prerequisites.cancelDependencyInstallation($elem))
+                    .then(settings.prerequisites.install(data, $installBtn));
+            },
 
-        install: function (data, $installBtn) {
-            $.ajax({
-                headers: {
-                    'X-CSRFToken': katana.$activeTab.find('input[name="csrfmiddlewaretoken"]').attr('value')
-                },
-                type: 'POST',
-                url: 'settings/install_prerequisite/',
-                data: data,
-            }).done(function(resp_data){
-                if(resp_data.status){
-                    $installBtn.html('Installed' + '&nbsp;<i class="fa fa-check-circle skyblue" aria-hidden="true"></i>');
-                    $installBtn.attr('status', 'installed');
-                    $installBtn.attr('aria-selected', 'false');
-                    $installBtn.prev().prev().html('Available Version: ' + data.version);
-                    katana.openAlert({"alert_type": "success",
-                        "heading": "Installation Successful",
-                        "text": "Name: " + data.name + "<br>" +
+            install: function (data, $installBtn) {
+                $.ajax({
+                    headers: {
+                        'X-CSRFToken': katana.$activeTab.find('input[name="csrfmiddlewaretoken"]').attr('value')
+                    },
+                    type: 'POST',
+                    url: 'settings/install_prerequisite/',
+                    data: data,
+                }).done(function (resp_data) {
+                    if (resp_data.status) {
+                        $installBtn.html('Installed' + '&nbsp;<i class="fa fa-check-circle skyblue" aria-hidden="true"></i>');
+                        $installBtn.attr('status', 'installed');
+                        $installBtn.attr('aria-selected', 'false');
+                        $installBtn.prev().prev().html('Available Version: ' + data.version);
+                        katana.openAlert({
+                            "alert_type": "success",
+                            "heading": "Installation Successful",
+                            "text": "Name: " + data.name + "<br>" +
                                 "Version: " + data.version + "<br>" +
                                 "Exit Status: " + resp_data.return_code + "<br><br>" +
                                 "Full Output: <br>" + resp_data.output + "<br><br>" +
                                 "Errors/Warnings (if any): <br>" + resp_data.errors,
-                        "show_cancel_btn": false
-                    })
-                } else {
-                    $installBtn.html('Install Again' + '&nbsp;<i class="fa fa-exclamation-circle red" aria-hidden="true"></i>');
-                    $installBtn.attr('status', 'install');
-                    $installBtn.attr('aria-selected', 'false');
-                    katana.openAlert({"alert_type": "danger",
-                        "heading": "Installation Unsuccessful",
-                        "text": "Name: " + data.name + "<br>" +
+                            "show_cancel_btn": false
+                        })
+                    } else {
+                        $installBtn.html('Install Again' + '&nbsp;<i class="fa fa-exclamation-circle red" aria-hidden="true"></i>');
+                        $installBtn.attr('status', 'install');
+                        $installBtn.attr('aria-selected', 'false');
+                        katana.openAlert({
+                            "alert_type": "danger",
+                            "heading": "Installation Unsuccessful",
+                            "text": "Name: " + data.name + "<br>" +
                                 "Version: " + data.version + "<br>" +
                                 "Exit Status: " + resp_data.return_code + "<br><br>" +
                                 "Errors: <br>" + resp_data.errors + "<br><br>" +
                                 "Full Output: <br>" + resp_data.output + "<br>",
-                        "show_cancel_btn": false
-                    })
-                }
-            });
+                            "show_cancel_btn": false
+                        })
+                    }
+                });
+            },
+
+            setInstallBtn: function ($installBtn) {
+                $installBtn.attr('status', 'installing');
+                $installBtn.attr('aria-selected', 'true');
+                $installBtn.html('Installing' + '&nbsp;<i class="fa fa-spinner fa-spin green" aria-hidden="true"></i>&nbsp;');
+            },
+        },
+        incrementfnc: function () {
+            $("#removebtn").find(".fa-minus-circle").remove();
+            inc = $('#get_count_of_ip input').length;
+            inc -= 13;
+            inc += 1;
+            $(".incrementfnc").append("<div katana-click='settings.onselect' class='field'><input category='repo' key=" + "userreposdir" + inc + " type='text' {% if v %} value='' {% endif %} placeholder=''><div class='file-explorer-launcher' katana-click='settings.openFileExplorer.logsOrResultsDir'></div>");
+            $("#saveButton").removeClass("saved");
         },
 
-        setInstallBtn: function ($installBtn) {
-            $installBtn.attr('status', 'installing');
-            $installBtn.attr('aria-selected', 'true');
-            $installBtn.html('Installing' + '&nbsp;<i class="fa fa-spinner fa-spin green" aria-hidden="true"></i>&nbsp;');
+        set_context: function (context) {
+            current_context = context;
         },
-    },
-    incrementfnc: function(){
-    $("#removebtn").find(".fa-minus-circle").remove();
-    inc =$('#get_count_of_ip input').length;
-    inc -= 13;
-    inc += 1;
-    $(".incrementfnc").append("<div katana-click='settings.onselect' class='field'><input category='repo' key="+"userreposdir"+inc+" type='text' {% if v %} value='' {% endif %} placeholder=''><div class='file-explorer-launcher' katana-click='settings.openFileExplorer.logsOrResultsDir'></div>");
-    $("#saveButton").removeClass("saved");
-   },
 
-   set_context:function(context){
-   current_context=context;
-   },
+        removerepo: function () {
+            fieldname = $(this).attr("key");
+            inputfd = current_context.parent().remove();
+            inputfd.remove();
+            $("#saveButton").removeClass("saved");
+            $("#removebtn").find(".fa-minus-circle").remove();
+        },
 
-   removerepo: function(){
-    fieldname=$(this).attr("key");
-    inputfd = current_context.parent().remove();
-    inputfd.remove();
-    $("#saveButton").removeClass("saved");
-    $("#removebtn").find(".fa-minus-circle").remove();
-   },
+        onselect: function () {
+            elem = $(this).children();
+            field = $(this).children().attr("key");
+            settings.set_context(elem);
+            $("#removebtn").find(".fa-minus-circle").remove();
+            $("<i class='fa fa-minus-circle' key='" + field + "' style='margin-left: 10px;' katana-click='settings.removerepo'></i>").insertAfter(".fa-plus-circle");
+            $("#saveButton").removeClass("saved");
+        },
 
-  onselect:function(){
-      elem=$(this).children();
-      field=$(this).children().attr("key");
-      settings.set_context(elem);
-      $("#removebtn").find(".fa-minus-circle").remove();
-      $("<i class='fa fa-minus-circle' key='"+field+"' style='margin-left: 10px;' katana-click='settings.removerepo'></i>").insertAfter(".fa-plus-circle");
-      $("#saveButton").removeClass("saved");
-},
+        deselect: function () {
+            $("#removebtn").find(".fa-minus-circle").remove();
+        },
 
-  deselect: function(){
-      $("#removebtn").find(".fa-minus-circle").remove();
- },
-
-};
+    };

@@ -13,4 +13,6 @@ urlpatterns = [
     url(r'^prerequisites_handler', views.prerequisites_handler, name='prerequisites_handler'),
     url(r'^install_prerequisite', views.install_prerequisite, name='install_prerequisite'),
     url(r'^validate_repo', views.validate_input_repo, name='validate_input_repo'),
+    url(r'^populate_paths', views.populate_paths, name='populate_paths'),
+    
 ]
