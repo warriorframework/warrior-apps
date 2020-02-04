@@ -75,98 +75,236 @@ def myajaxtestview(request):
     return HttpResponse(request.POST['text'])
 
 def populate_paths(request):
+    test_case_folder = "Testcases"
+    suites_folder = "Suites"
+    project_folder = "Projects"
+    data_folder = "Data"
+    config_folder = "Config_files"
+    wrapper_folder = "wrapper_files"
     returned_json = read_json_data(config_json_path)
+    import pdb
+    pdb.set_trace()
+    list_of_files = os.listdir(returned_json["pythonsrcdir"])
+    if list_of_files:
+
+        if "warriorspace" not in list_of_files and "Warriorspace" not in list_of_files and "Projects" not in \
+                list_of_files and "projects" not in list_of_files and "Suites" not in list_of_files and "suites" \
+                not in list_of_files and "Testcases" not in list_of_files and "testcases" not in list_of_files and \
+                "Data" not in list_of_files and "data" not in list_of_files and "Wrapper_files" not in list_of_files and \
+                "wrapper_files" not in list_of_files and "Config_files" not in list_of_files and "config_files" not in list_of_files:
+            os.mkdir(returned_json["pythonsrcdir"] + "/Warriorspace")
+            sub_folders = {"Testcases": "xmldir", "Suites": "testsuitedir", "Projects": "projdir", "Data": "idfdir",
+                           "Config_files": "testdata", "wrapper_files": "testwrapper"}
+            for folder in ["Testcases", "Suites", "Data", "wrapper_files", "Config_files", "Projects"]:
+                os.mkdir(returned_json["pythonsrcdir"] + "/Warriorspace/" + folder)
+                returned_json[sub_folders[folder]] = returned_json["pythonsrcdir"] + "/Warriorspace/" + folder
+            with open(config_json_path, "w") as f:
+                f.write(json.dumps(returned_json, indent=4))
+            return HttpResponse(request)
+
     if os.path.isdir(returned_json["pythonsrcdir"]):
-        if returned_json["pythonsrcdir"].split("/")[-1] == "Warriorspace" or returned_json["pythonsrcdir"].split("/")[-2] == "Warriorspace":
-            child_dirs = os.listdir(returned_json["pythonsrcdir"])
-            if "Testcases" in child_dirs:
+        import pdb
+        pdb.set_trace()
+        if returned_json["pythonsrcdir"].split("/")[-1].lower() == "warriorspace" or returned_json["pythonsrcdir"].split("/")[-2].lower() == "warriorspace":
+            child_dirs = os.listdir(returned_json["pythonsrcdir"])            
+            if "Testcases" in child_dirs :
+                test_case_folder = "Testcases"  
                 returned_json["xmldir"] = returned_json["pythonsrcdir"] + "/Testcases"
+
+            elif "testcases" in child_dirs :
+                test_case_folder = "testcases"
+                returned_json["xmldir"] = returned_json["pythonsrcdir"] + "/testcases"
             else:
+                test_case_folder = "Testcases"
                 os.mkdir(returned_json["pythonsrcdir"] + "/Testcases")
                 returned_json["xmldir"] = (returned_json["pythonsrcdir"] + "/Testcases")
             
             if "Suites" in child_dirs:
+                suites_folder = "Suites"
                 returned_json["testsuitedir"] = returned_json["pythonsrcdir"] + "/Suites"
+            elif "suites" in child_dirs:
+                suites_folder = "suites"
+                returned_json["testsuitedir"] = returned_json["pythonsrcdir"] + "/suites"
             else:
+                suites_folder = "Suites"
                 os.mkdir(returned_json["pythonsrcdir"] + "/Suites")
                 returned_json["testsuitedir"] = (returned_json["pythonsrcdir"] + "/Suites")
             
             if "Projects" in child_dirs:
+                project_folder = "Projects"
                 returned_json["projdir"] = returned_json["pythonsrcdir"] + "/Projects"
+            elif "projects" in child_dirs:
+                project_folder = "projects"
+                returned_json["projdir"] = returned_json["pythonsrcdir"] + "/projects"
             else:
+                project_folder = "Projects"
                 os.mkdir(returned_json["pythonsrcdir"] + "/Projects")
                 returned_json["projdir"] = (returned_json["pythonsrcdir"] + "/Projects")
             
             if "Data" in child_dirs:
+                data_folder = "Data"
                 returned_json["idfdir"] = returned_json["pythonsrcdir"] + "/Data"
+            elif "data" in child_dirs:
+                data_folder = "data"
+                returned_json["idfdir"] = returned_json["pythonsrcdir"] + "/data"
             else:
+                data_folder = "Data"
                 os.mkdir(returned_json["pythonsrcdir"] + "/Data")
                 returned_json["idfdir"] = (returned_json["pythonsrcdir"] + "/Data")
 
             if "Config_files" in child_dirs:
+                config_folder = "Config_files"
                 returned_json["testdata"] = returned_json["pythonsrcdir"] + "/Config_files"
+            elif "config_files" in child_dirs:
+                config_folder = "config_files"
+                returned_json["testdata"] = returned_json["pythonsrcdir"] + "/config_files"
             else:
+                config_folder = "Config_files"
                 os.mkdir(returned_json["pythonsrcdir"] + "/Config_files")
                 returned_json["testdata"] = (returned_json["pythonsrcdir"] + "/Config_files")
 
             if "wrapper_files" in child_dirs:
+                wrapper_folder = "wrapper_files"
                 returned_json["testwrapper"] = returned_json["pythonsrcdir"] + "/wrapper_files"
+            elif "Wrapper_files" in child_dirs:
+                wrapper_folder = "Wrapper_files"
+                returned_json["testwrapper"] = returned_json["pythonsrcdir"] + "/Wrapper_files"
             else:
+                wrapper_folder = "wrapper_files"
                 os.mkdir(returned_json["pythonsrcdir"] + "/wrapper_files")
                 returned_json["testwrapper"] = (returned_json["pythonsrcdir"] + "/wrapper_files")
         else:
+
             base_tree = os.listdir(returned_json["pythonsrcdir"])
-            if "Warriorspace" in base_tree:
+            if "warriorspace" in [x.lower() for x in base_tree]:
                 child_dirs = os.listdir(returned_json["pythonsrcdir"])
-                if "Testcases" in child_dirs:
+
+
+                if "Testcases" in child_dirs :
+                    test_case_folder = "Testcases"  
                     returned_json["xmldir"] = returned_json["pythonsrcdir"] + "/Testcases"
+
+                elif "testcases" in child_dirs :
+                    test_case_folder = "testcases"
+                    returned_json["xmldir"] = returned_json["pythonsrcdir"] + "/testcases"
                 else:
+                    test_case_folder = "Testcases"
                     os.mkdir(returned_json["pythonsrcdir"] + "/Testcases")
                     returned_json["xmldir"] = (returned_json["pythonsrcdir"] + "/Testcases")
-            
+                
                 if "Suites" in child_dirs:
+                    suites_folder = "Suites"
                     returned_json["testsuitedir"] = returned_json["pythonsrcdir"] + "/Suites"
+                elif "suites" in child_dirs:
+                    suites_folder = "suites"
+                    returned_json["testsuitedir"] = returned_json["pythonsrcdir"] + "/suites"
                 else:
+                    suites_folder = "Suites"
                     os.mkdir(returned_json["pythonsrcdir"] + "/Suites")
                     returned_json["testsuitedir"] = (returned_json["pythonsrcdir"] + "/Suites")
                 
                 if "Projects" in child_dirs:
+                    project_folder = "Projects"
                     returned_json["projdir"] = returned_json["pythonsrcdir"] + "/Projects"
+                elif "projects" in child_dirs:
+                    project_folder = "projects"
+                    returned_json["projdir"] = returned_json["pythonsrcdir"] + "/projects"
                 else:
+                    project_folder = "Projects"
                     os.mkdir(returned_json["pythonsrcdir"] + "/Projects")
                     returned_json["projdir"] = (returned_json["pythonsrcdir"] + "/Projects")
-            
+                
                 if "Data" in child_dirs:
+                    data_folder = "Data"
                     returned_json["idfdir"] = returned_json["pythonsrcdir"] + "/Data"
+                elif "data" in child_dirs:
+                    data_folder = "data"
+                    returned_json["idfdir"] = returned_json["pythonsrcdir"] + "/data"
                 else:
+                    data_folder = "Data"
                     os.mkdir(returned_json["pythonsrcdir"] + "/Data")
                     returned_json["idfdir"] = (returned_json["pythonsrcdir"] + "/Data")
 
                 if "Config_files" in child_dirs:
+                    config_folder = "Config_files"
                     returned_json["testdata"] = returned_json["pythonsrcdir"] + "/Config_files"
+                elif "config_files" in child_dirs:
+                    config_folder = "config_files"
+                    returned_json["testdata"] = returned_json["pythonsrcdir"] + "/config_files"
                 else:
+                    config_folder = "Config_files"
                     os.mkdir(returned_json["pythonsrcdir"] + "/Config_files")
                     returned_json["testdata"] = (returned_json["pythonsrcdir"] + "/Config_files")
+
                 if "wrapper_files" in child_dirs:
+                    wrapper_folder = "wrapper_files"
                     returned_json["testwrapper"] = returned_json["pythonsrcdir"] + "/wrapper_files"
+                elif "Wrapper_files" in child_dirs:
+                    wrapper_folder = "Wrapper_files"
+                    returned_json["testwrapper"] = returned_json["pythonsrcdir"] + "/Wrapper_files"
                 else:
+                    wrapper_folder = "wrapper_files"
                     os.mkdir(returned_json["pythonsrcdir"] + "/wrapper_files")
                     returned_json["testwrapper"] = (returned_json["pythonsrcdir"] + "/wrapper_files")
             else:
-                if "Testcases" in base_tree or "Suites" in base_tree or "Data" in base_tree or "wrapper_files" in base_tree or "Config_files" in base_tree or "Projects" in base_tree or "Execution" in base_tree:
-                    sub_folders = {"Testcases":"xmldir","Suites":"testsuitedir","Projects":"projdir","Data": "idfdir","Config_files":"testdata","wrapper_files":"testwrapper"}
-                    for folder in ["Testcases", "Suites", "Data", "wrapper_files", "Config_files", "Projects"]:
-                        try:
-                            os.mkdir(returned_json["pythonsrcdir"] + "/"+ folder)
-                            returned_json[sub_folders[folder]] = returned_json["pythonsrcdir"] + "/"+ folder
-                        except FileExistsError:
-                            returned_json[sub_folders[folder]] = returned_json["pythonsrcdir"] + "/"+ folder
-                else:
-                    os.mkdir(returned_json["pythonsrcdir"] + "/Warriorspace")
-                    sub_folders = {"Testcases":"xmldir","Suites":"testsuitedir","Projects":"projdir","Data": "idfdir","Config_files":"testdata","wrapper_files":"testwrapper"}
-                    for folder in ["Testcases", "Suites", "Data", "wrapper_files", "Config_files", "Projects"]:
-                        os.mkdir(returned_json["pythonsrcdir"] + "/Warriorspace/"+ folder)
-                        returned_json[sub_folders[folder]] = returned_json["pythonsrcdir"] + "/Warriorspace/"+ folder
+
+                if "Testcases" in base_tree :
+                    test_case_folder = "Testcases"                    
+
+                elif "testcases" in base_tree :
+                    test_case_folder = "testcases"
+                    
+
+                
+                if "Suites" in base_tree:
+                    suites_folder = "Suites"
+                    
+                elif "suites" in base_tree:
+                    suites_folder = "suites"
+                    
+
+                
+                if "Projects" in base_tree:
+                    project_folder = "Projects"
+                    
+                elif "projects" in base_tree:
+                    project_folder = "projects"
+                    
+
+                    
+                if "Data" in base_tree:
+                    data_folder = "Data"
+                    
+                elif "data" in base_tree:
+                    data_folder = "data"
+
+                if "Config_files" in base_tree:
+                    config_folder = "Config_files"
+                    
+                elif "config_files" in base_tree:
+                    config_folder = "config_files"
+                    
+
+
+                if "wrapper_files" in base_tree:
+                    wrapper_folder = "wrapper_files"
+                    
+                elif "Wrapper_files" in base_tree:
+                    wrapper_folder = "Wrapper_files"
+                    
+
+                sub_folders = {test_case_folder:"xmldir", suites_folder:"testsuitedir",project_folder:"projdir",
+                               data_folder: "idfdir",config_folder:"testdata", wrapper_folder:"testwrapper"}
+                list_of_keys = list(sub_folders.keys())
+                for folder in list_of_keys:
+                    try:
+                        os.mkdir(returned_json["pythonsrcdir"] + "/"+ folder)
+                        returned_json[sub_folders[folder]] = returned_json["pythonsrcdir"] + "/"+ folder
+                    except FileExistsError:
+                        returned_json[sub_folders[folder]] = returned_json["pythonsrcdir"] + "/"+ folder
+
+
+
     with open(config_json_path, "w") as f:
         f.write(json.dumps(returned_json, indent=4))
     return HttpResponse(request)

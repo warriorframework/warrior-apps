@@ -54,33 +54,11 @@ class Settings:
         if request.method == 'POST':
             w_settings_data = {'Setting': {'Logsdir': '', 'Resultsdir': '', '@name': ''}}
             returned_json = json.loads(request.POST.get('data'))
-            if os.environ["pipmode"]=='True':
-                if os.path.isdir(returned_json[0]['pythonsrcdir']):
-                    if os.path.split(returned_json[0]['pythonsrcdir'])[-1]=='Warriorspace' or os.path.split(returned_json[0]['pythonsrcdir'])[-2]=='Warriorspace':
-                        returned_json[0]['pythonsrcdir']= returned_json[0]['pythonsrcdir']
-                    else:
-                        try:
-                            os.mkdir(returned_json[0]['pythonsrcdir']+'/Warriorspace')
-                            returned_json[0]['pythonsrcdir']= returned_json[0]['pythonsrcdir']+'/Warriorspace'
-                        except FileExistsError:
-                            returned_json[0]['pythonsrcdir']= returned_json[0]['pythonsrcdir']+'/Warriorspace'
-                else:
-                    return
-                ref = {'xmldir': "Testcases",
-                       'testsuitedir': 'Suites',
-                       'projdir': 'Projects',
-                       'idfdir': 'Data',
-                       'testdata': 'Config_files',
-                       'testwrapper': 'wrapper_files'}
+
             for k, v in list(w_settings_data['Setting'].items()):
                 w_settings_data['Setting'][k] = returned_json[0][k]
                 del returned_json[0][k]
-            if os.environ["pipmode"]=='True':
-                for key, value in returned_json[0].items():
-                    if key in ref.keys() and returned_json[0]['pythonsrcdir'] != "" and returned_json[0][key]=="":
-                        returned_json[0][key] = returned_json[0]['pythonsrcdir']+'/'+ ref[key]
-                        if not os.path.isdir(returned_json[0][key]):
-                            os.mkdir(returned_json[0][key])
+
             elem_file.remove(def_dir_xml_obj)
             val = xmltodict.unparse(w_settings_data, pretty=True)
             elem_file.insert(0, xml_controler.fromstring(val))
