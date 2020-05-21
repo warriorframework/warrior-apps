@@ -210,7 +210,9 @@ var settings = {
     save: function () {
         nul_flag = 0;
         var $elem = this;
+        app_url = this.parent().next(".page-content-inner").find(".flex-rows").attr("post-url")
         // $elem.removeClass('saved').addClass('loading');
+        if(app_url == "settings/general_setting_handler"){
         inc = $('#get_count_of_ip input').length;
         inc -= 13;
         var ipfarray = [];
@@ -316,6 +318,12 @@ var settings = {
 
             });
         }
+    }
+    else{
+        katana.templateAPI.post.call(katana.$activeTab.find('.to-save'), null, null, katana.toJSON(), function (data) {
+        $elem.removeClass('loading').addClass('saved');
+        });
+    }
     },
 
         prerequisites: {
