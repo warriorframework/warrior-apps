@@ -221,6 +221,9 @@ var settings = {
             var ipfarray = $("input[category='repo']")
                 .map(function () { return $(this).val(); }).get();
         }
+        if (ipfarray[0].trim() == ""){
+            ipfarray.shift()
+        }
         function find_duplicate_in_array(ipfarray) {
             var object = {};
             var result = [];

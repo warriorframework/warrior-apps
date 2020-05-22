@@ -1,11 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <credentials>
-	<system name="">
-		<search_string>a</search_string>
-		<testdata>test</testdata>
-	</system>
-	<system name="">
-		<search_string>b</search_string>
-		<testdata>datatest</testdata>
-	</system>
 </credentials>
