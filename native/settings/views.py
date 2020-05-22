@@ -261,7 +261,7 @@ def populate_paths(request):
                 returned_json["testwrapper"] = (
                     returned_json["pythonsrcdir"] + "/wrapper_files"
                 )
-        else:
+        elif os.listdir(returned_json["pythonsrcdir"]):
 
             base_tree = os.listdir(returned_json["pythonsrcdir"])
             for element in base_tree:
@@ -463,6 +463,28 @@ def populate_paths(request):
                         returned_json[sub_folders[folder]] = (
                             returned_json["pythonsrcdir"] + "/" + folder
                         )
+        else:
+            os.mkdir(returned_json["pythonsrcdir"] + "/Warriorspace")
+            sub_folders = {
+                "Testcases": "xmldir",
+                "Suites": "testsuitedir",
+                "Projects": "projdir",
+                "Data": "idfdir",
+                "Config_files": "testdata",
+                "wrapper_files": "testwrapper",
+            }
+            for folder in [
+                "Testcases",
+                "Suites",
+                "Data",
+                "wrapper_files",
+                "Config_files",
+                "Projects",
+            ]:
+                os.mkdir(returned_json["pythonsrcdir"] + "/Warriorspace/" + folder)
+                returned_json[sub_folders[folder]] = (
+                    returned_json["pythonsrcdir"] + "/Warriorspace/" + folder
+                )
 
     with open(config_json_path, "w") as f:
         f.write(json.dumps(returned_json, indent=4))

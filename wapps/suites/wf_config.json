@@ -3,7 +3,7 @@
   "color": "lightblue",
   "developer": "Warrior Framework",
   "description": "Edit your Suites Files here.",
-  "app" : {"name" : "Suites", "url" : "/katana/suites/", "include": "wapps.suites.urls"},
+  "app" : {"name" : "Suites", "url" : "/katana/suites/", "include": "katana.wapps.suites.urls"},
   "warrior-compatibility": ":warrior-4.0.0-beta",
   "warrior-incompatibility": "",
   "version": "1.0.0",
