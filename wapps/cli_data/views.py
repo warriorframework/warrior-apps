@@ -27,7 +27,7 @@ class CliDataView(View):
 
 class CliDataFileClass(View):
     nav_obj = Navigator()
-    app_directory = join_path(nav_obj.get_katana_dir(), "katana.wapps", "cli_data")
+    app_directory = join_path(nav_obj.get_katana_dir(), "wapps", "cli_data")
     app_static_dir = join_path(app_directory, "static")
 
     def get(self, request):

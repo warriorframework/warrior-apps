@@ -23,19 +23,19 @@ class Settings:
 
     def __init__(self):
         self.navigator = Navigator()
-        self.static_dir = join_path(self.navigator.get_katana_dir(), "katana.native", "settings", "static", "settings")
+        self.static_dir = join_path(self.navigator.get_katana_dir(), "native", "settings", "static", "settings")
 
     def get_location(self):
         pass
 
     def smart_analysis_handler(self, request):
-        mainFile = self.navigator.get_warrior_dir() + os.sep + 'Tools' + os.sep + 'connection' + os.sep +'connect_settings.xml'
+        mainFile = self.navigator.get_katana_dir() + os.sep + 'native' + os.sep + 'settings' + os.sep + 'Tools' + os.sep + 'connection' + os.sep +'connect_settings.xml'
         if request.method == 'POST':
             val = xmltodict.unparse({'credentials': {'system': json.loads(request.POST.get('data'))}}, pretty=True)
             with open(mainFile, 'w') as f:
                 f.write(val)
         else:
-            with open(mainFile, 'r') as f:
+            with open(mainFile, 'rb') as f:
                 mainDict = xmltodict.parse(f)['credentials']
             if mainDict is not None and not isinstance(mainDict['system'], list):
                 mainDict['system'] = [mainDict['system']]
@@ -44,7 +44,7 @@ class Settings:
 
     def general_setting_handler(self, request):
         json_file = self.navigator.get_katana_dir() + os.sep + 'config.json'
-        w_settings = self.navigator.get_warrior_dir() + 'Tools' + os.sep + 'w_settings.xml'
+        w_settings = self.navigator.get_katana_dir() + os.sep + 'native' + os.sep + 'settings' + os.sep + 'Tools' + os.sep + 'w_settings.xml'
         elem_file = xml_controler.parse(w_settings)
         elem_file = elem_file.getroot()
         elem = self.search_by_name('def_dir', elem_file)
@@ -103,7 +103,7 @@ class Settings:
                 return elem
 
     def email_setting_handler(self, request):
-        w_settings = self.navigator.get_warrior_dir() + 'Tools'+ os.sep + 'w_settings.xml'
+        w_settings = self.navigator.get_katana_dir()+ os.sep + 'native' + os.sep + 'settings' + os.sep + 'Tools'+ os.sep + 'w_settings.xml'
         elem_file = xml_controler.parse(w_settings)
         elem_file = elem_file.getroot()
         elem = self.search_by_name('mail_to', elem_file)
@@ -121,7 +121,7 @@ class Settings:
             return xmldoc
 
     def jira_setting_handler(self, request):
-        jira_config = self.navigator.get_warrior_dir() + 'Tools' + os.sep + 'jira' + os.sep +'jira_config.xml'
+        jira_config = self.navigator.get_katana_dir() + os.sep + 'native' + os.sep + 'settings' + os.sep + 'Tools' + os.sep + 'jira' + os.sep +'jira_config.xml'
         elem_file = xml_controler.parse(jira_config)
         elem_file = elem_file.getroot()
         xml_string = xml_controler.tostring(elem_file)
@@ -142,7 +142,7 @@ class Settings:
             return xmldoc
 
     def secret_handler(self, request):
-        keyDoc = self.navigator.get_warrior_dir() + os.sep + 'Tools' + os.sep + 'admin' + os.sep +'secret.key'
+        keyDoc = self.navigator.get_katana_dir() + os.sep + 'native' + os.sep + 'settings' + os.sep + 'Tools' + os.sep + 'admin' + os.sep +'secret.key'
         if request.method == 'POST':
             val = request.POST.get("data[0][value]")
             elem_file = open(keyDoc, 'w')
