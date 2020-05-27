@@ -54,7 +54,6 @@ def process_xml(data):
                     del sys[k]
                 elif k == "#text":
                     del sys[k]
-    print((json.dumps(data[root], indent=4)))
 
     ref_dict = copy.deepcopy(data[root])
     return data, ref_dict
@@ -96,10 +95,13 @@ def get_jstree_dir(request):
         Prepare the json for jstree to use
     """
     config = read_json_data(JSON_CONFIG)
-    data = Navigator().get_dir_tree_json(config["idfdir"])
-    data["text"] = config["idfdir"]
+    if os.path.exists(config["idfdir"]):
+        data = Navigator().get_dir_tree_json(config["idfdir"])
+        data["text"] = config["idfdir"]
+    else:
+        data="invalid_path"
     # print json.dumps(data, indent=4)
-    return JsonResponse(data)
+    return JsonResponse(data, safe=False)
 
 def file_list(request):
     return render(request, 'wdf_edit/file_list.html', {})
@@ -187,12 +189,10 @@ def on_post(request):
     result["credentials"]["system"] = systems
 
     from xml.dom.minidom import parseString as miniparse
-    print(miniparse(xmltodict.unparse(result)).toprettyxml())
 
     config = read_json_data(JSON_CONFIG)
     wdfdir = config["idfdir"]
     filepath = os.path.join(wdfdir, filepath)
-    print("Filepath:", filepath)
     f = open(filepath, "w")
     f.write(miniparse(xmltodict.unparse(result)).toprettyxml())
     return render(request, 'wdf_edit/file_list.html')
