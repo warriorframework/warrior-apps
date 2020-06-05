@@ -44,7 +44,10 @@ class Settings:
 
     def general_setting_handler(self, request):
         json_file = self.navigator.get_katana_dir() + os.sep + 'config.json'
-        w_settings = self.navigator.get_katana_dir() + os.sep + 'native' + os.sep + 'settings' + os.sep + 'Tools' + os.sep + 'w_settings.xml'
+        if os.path.exists(self.navigator.get_warrior_dir() + os.sep + 'Tools' + os.sep + 'w_settings.xml'):
+            w_settings = self.navigator.get_warrior_dir() + os.sep + 'Tools' + os.sep + 'w_settings.xml'
+        else:
+            w_settings = self.navigator.get_katana_dir() + os.sep + 'native' + os.sep + 'settings' + os.sep + 'Tools' + os.sep + 'w_settings.xml'
         elem_file = xml_controler.parse(w_settings)
         elem_file = elem_file.getroot()
         elem = self.search_by_name('def_dir', elem_file)
