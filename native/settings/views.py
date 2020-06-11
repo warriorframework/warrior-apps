@@ -103,6 +103,7 @@ def install_prerequisite(request):
 def validate_input_repo(request):
     paths_string = request.POST.get("paths")
     paths_list = ast.literal_eval(paths_string)
+    in_valid = True
     for i in paths_list:
         if os.path.exists(i):
             in_valid = False
