@@ -13,10 +13,9 @@ class Installer:
         self.plugin_directory = join_path(self.base_directory, "warrior", "plugins")
         self.settings_file = join_path(self.base_directory, "katana", "wui", "settings.py")
         self.urls_file = join_path(self.base_directory, "katana", "wui", "urls.py")
-
-        self.app_name = get_sub_folders(join_path(path_to_app, "Katanaframework", "katana", "wapps"))[0]
-        self.path_to_app = join_path(path_to_app, "Katanaframework", "katana", "wapps", self.app_name)
-        self.path_to_plugin_dir = join_path(path_to_app, "Katanaframework", "warrior", "plugins")
+        self.path_to_app = path_to_app
+        self.app_name = get_dir_from_path(path_to_app)
+        self.path_to_plugin_dir = join_path(path_to_app, "plugins")
         self.wf_config_file = join_path(self.path_to_app, "wf_config.json")
 
         self.plugins_paths = get_sub_folders(self.path_to_plugin_dir, abs_path=True)
@@ -111,8 +110,12 @@ class Installer:
         self.settings_backup = data
         index = -1
         for i in range(0, len(data)):
-            if "katana.wui.core" in data[i]:
-                index = i
+            if "INSTALLED_APPS" in data[i]:
+                j = i
+                for i in range(i, len(data)):
+                    if "katana.wui.core" in data[i]:
+                        index = i
+                        break
                 break
 
         white_space = data[index].split("'")
