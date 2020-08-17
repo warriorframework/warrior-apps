@@ -66,7 +66,7 @@ def uninstall_an_app(request):
 
 def install_an_app(request):
     app_path = request.POST.get("app_paths")
-    dot_data_dir = join_path(nav_obj.get_katana_dir(), "katana.native", "wapp_management", ".data")
+    dot_data_dir = join_path(nav_obj.get_katana_dir(), "native", "wapp_management", ".data")
     temp_dir_path = join_path(dot_data_dir, "temp")
     output_data = {"status": True, "message": ""}
 

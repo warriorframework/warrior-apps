@@ -27,22 +27,7 @@ var wapp_management = {
                 data: {"app_path": app_path, "app_type": app_type}
             }).done(function(data) {
                 $('#installed_apps_div').html(data)
-                setTimeout(function(){
-                    katana.refreshLandingPage();
-                    $.ajax({
-                        type: 'GET',
-                        url: 'wapp_management/update_installed_apps_section/',
-                    }).done(function(installed_apps_data){
-                        $currentPage.find('#installed_apps_div').html(installed_apps_data);
-                        katana.openAlert({
-                            "alert_type": "success",
-                            "text": app_name + " has been uninstalled.",
-                            "timer": 1250,
-                            "show_accept_btn": false,
-                            "show_cancel_btn": false
-                        });
-                    });
-                }, 2000);
+                wapp_management.timerAlert("Finishing setup...", "Please refresh the page once it is completed.", "40000")
             });
         },
 
@@ -64,6 +49,7 @@ var wapp_management = {
         var app_paths = []
         var path = "";
         for(var i=0 ; i<$elements.length; i++){
+            $($elements[i]).attr('valid-data', "true")
             path = $elements[i].value.trim();
             if(path == ""){
                 katana.openAlert({
@@ -123,7 +109,7 @@ var wapp_management = {
                 url: 'wapp_management/install_an_app/',
                 data: {"app_paths": app_path},
             }).done(function(data){
-                $($formDivChildren[0]).remove();
+                // $($formDivChildren[0].val(""));
                 if(data.status){
                     var temp = {"name": app_path, "message": data.message, "status": true};
                     message["installed"].push(temp);
@@ -131,44 +117,61 @@ var wapp_management = {
                     var temp = {"name": app_path, "message": data.message, "status": false};
                     message["not_installed"].push(temp);
                 }
-                setTimeout(function(){
-                    katana.refreshLandingPage();
-                    $.ajax({
-                        type: 'GET',
-                        url: 'wapp_management/update_installed_apps_section/',
-                    }).done(function(installed_apps_data){
-                        $currentPage.find('#installed_apps_div').html(installed_apps_data);
-                        wapp_management.sendInstallInfo(message);
-                    });
-                }, 2000);
-            });
-        } else {
-            var alertType = "success";
-            var heading = "Apps have been installed.";
-            var text = "";
+                var alertType = "success";
+                var heading = "App has been installed.";
+                var text = "";
             if(message["installed"].length > 0){
                 for(var i=0; i<message["installed"].length; i++){
                     text += message["installed"][i]["name"] + ", ";
                 }
                 text = text.slice(0, -2);
-                text += " have been installed successfully.<br><br>";
+                text += " has been installed successfully.<br><br> Please refresh the page.";
             }
             if(message["not_installed"].length > 0){
-                alertType = "danger";
-                heading = "Some apps could not be installed.";
+                alertType = "error";
+                heading = "App could not be installed.";
                 for(var i=0; i<message["not_installed"].length; i++){
                     text += message["not_installed"][i]["name"] + " could not be installed. Errors: " + message["not_installed"][i]["message"] + "<br><br>";
                 }
             }
-            wapp_management.addAnotherApp(1);
-            katana.openAlert({
-                "alert_type": alertType,
-                "heading": heading,
-                "text": text,
-                "show_accept_btn": true,
-                "show_cancel_btn": false
+            wapp_management.timerAlert("Finishing setup...", "Please wait untill this process completes.", "40000")
+            setTimeout(function(){
+                wapp_management.alert(heading, text, alertType)
+            }, 40010)
             });
         }
+    },
+
+    alert: function (header, message, message_type) {
+        swal.fire(
+            header,
+            message,
+            message_type
+        )
+    },
+
+    timerAlert: function(title, message, timer){
+        Swal.fire({
+            title: title,
+            html: message,
+            timer: timer,
+            timerProgressBar: false,
+            onBeforeOpen: () => {
+              Swal.showLoading()
+              timerInterval = setInterval(() => {
+                const content = Swal.getContent()
+                if (content) {
+                  const b = content.querySelector('b')
+                  if (b) {
+                    b.textContent = Swal.getTimerLeft()
+                  }
+                }
+              }, 100)
+            },
+            onClose: () => {
+              clearInterval(timerInterval)
+            }
+          })
     },
 
     saveConfig: function(app_paths, callback){
@@ -293,14 +296,7 @@ var wapp_management = {
                                                'id="fe_browser_' + $loop_num + '">' +
                                             'Browse' +
                                         '</button>' +
-                                '</div>' +
-                                '<div class="col-sm-1" style="padding: 0.2rem 0.5rem 0 0.5rem;">' +
-                                    '<button class="btn btn-danger btn-block" ' +
-                                             'katana-click="wapp_management.deleteAppPath" ' +
-                                             'app_path_index="' + $loop_num + '">' +
-                                        'Delete' +
-                                    '</button>' +
-                                '</div>' +
+                                '</div>'+
                             '</div>'
 
         /* <div class="col-sm-3" id="status-div" style="padding: 0.8rem 0 0 0.5rem "></div> */
