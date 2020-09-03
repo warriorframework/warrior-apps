@@ -53,31 +53,34 @@ class Execution(object):
         Constructor for execution app
         """
         self.nav = Navigator()
-        self.config_data = read_config_file_data()
+        self.config_data = ""
         self.katana_dir = os.path.dirname(katana.native.__path__[0])
         self.config_json = os.path.join(self.katana_dir, 'config.json')
-        self.config_json_dict = json.loads(open(self.config_json).read())
-        self.warrior_dir = self.config_json_dict['pythonsrcdir']
-        self.warrior = os.path.join(self.warrior_dir, 'Warrior')
-        self.default_ws = read_config_file_data()["pythonsrcdir"]
+        self.config_json_dict = ""
+        self.warrior_dir = ""
+        self.warrior = ""
+        self.default_ws = ""
         self.templates_dir = os.path.join(templates_dir, 'execution')
-        self.jira_settings_file = os.path.join(self.warrior_dir, 'Tools', 'jira', 'jira_config.xml')        
+        self.jira_settings_file = ""      
         self.execution_settings_json = os.path.join(templates_dir, 'execution', 'execution_settings.json')
         
-        
-
-    
     def index(self, request):
         """
         Index page for exeution app
         """
+        self.config_data = read_config_file_data()
+        self.config_json_dict = json.loads(open(self.config_json).read())
+        self.warrior_dir = self.config_json_dict['pythonsrcdir']
+        self.warrior = os.path.join(self.warrior_dir, 'Warrior')
+        self.default_ws = read_config_file_data()["pythonsrcdir"]
+        self.jira_settings_file = os.path.join(self.warrior_dir, 'Tools', 'jira', 'jira_config.xml')        
+        
         execution_settings_dict = update_jira_proj_list(self.jira_settings_file, self.execution_settings_json)
         #json.loads(open(self.execution_settings_json).read())
         start_dir = read_config_file_data()["pythonsrcdir"]
         execution_settings_dict['defaults']['start_dir'] = start_dir
         index_template = os.path.join(self.templates_dir, 'execution.html')        
         return render(request, index_template, execution_settings_dict)
-    
     
     def get_results_index(self, request):
         """
