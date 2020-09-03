@@ -73,16 +73,9 @@ class Execution(object):
         """
         execution_settings_dict = update_jira_proj_list(self.jira_settings_file, self.execution_settings_json)
         #json.loads(open(self.execution_settings_json).read())
-        if os.environ["pipmode"] == 'True':
-            start_dir = read_config_file_data()["pythonsrcdir"]
-        else:
-            start_dir = self.default_ws if execution_settings_dict['defaults']['start_dir'] == 'default' \
-                else execution_settings_dict['defaults']['start_dir']
+        start_dir = read_config_file_data()["pythonsrcdir"]
         execution_settings_dict['defaults']['start_dir'] = start_dir
         index_template = os.path.join(self.templates_dir, 'execution.html')        
-        
-        
-        
         return render(request, index_template, execution_settings_dict)
     
     
