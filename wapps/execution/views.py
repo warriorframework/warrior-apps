@@ -53,40 +53,34 @@ class Execution(object):
         Constructor for execution app
         """
         self.nav = Navigator()
-        self.config_data = read_config_file_data()
+        self.config_data = ""
         self.katana_dir = os.path.dirname(katana.native.__path__[0])
-        self.wf_dir = os.path.dirname(self.katana_dir)
-        self.warrior = os.path.join(self.wf_dir, 'warrior', 'Warrior')
-        if os.environ["pipmode"]=='True':
-            self.default_ws = read_config_file_data()["pythonsrcdir"]
-        else:
-            self.default_ws = os.path.join(self.wf_dir, 'warrior', 'Warriorspace')
-        self.templates_dir = os.path.join(templates_dir, 'execution')
-        self.jira_settings_file = os.path.join(self.wf_dir, 'warrior', 'Tools', 'jira', 'jira_config.xml')        
-        self.execution_settings_json = os.path.join(templates_dir, 'execution', 'execution_settings.json')
         self.config_json = os.path.join(self.katana_dir, 'config.json')
+        self.config_json_dict = ""
+        self.warrior_dir = ""
+        self.warrior = ""
+        self.default_ws = ""
+        self.templates_dir = os.path.join(templates_dir, 'execution')
+        self.jira_settings_file = ""      
+        self.execution_settings_json = os.path.join(templates_dir, 'execution', 'execution_settings.json')
         
-        
-
-    
     def index(self, request):
         """
         Index page for exeution app
         """
+        self.config_data = read_config_file_data()
+        self.config_json_dict = json.loads(open(self.config_json).read())
+        self.warrior_dir = self.config_json_dict['pythonsrcdir']
+        self.warrior = os.path.join(self.warrior_dir, 'Warrior')
+        self.default_ws = read_config_file_data()["pythonsrcdir"]
+        self.jira_settings_file = os.path.join(self.warrior_dir, 'Tools', 'jira', 'jira_config.xml')        
+        
         execution_settings_dict = update_jira_proj_list(self.jira_settings_file, self.execution_settings_json)
         #json.loads(open(self.execution_settings_json).read())
-        if os.environ["pipmode"] == 'True':
-            start_dir = read_config_file_data()["pythonsrcdir"]
-        else:
-            start_dir = self.default_ws if execution_settings_dict['defaults']['start_dir'] == 'default' \
-                else execution_settings_dict['defaults']['start_dir']
+        start_dir = read_config_file_data()["pythonsrcdir"]
         execution_settings_dict['defaults']['start_dir'] = start_dir
         index_template = os.path.join(self.templates_dir, 'execution.html')        
-        
-        
-        
         return render(request, index_template, execution_settings_dict)
-    
     
     def get_results_index(self, request):
         """
@@ -199,7 +193,7 @@ class Execution(object):
         katana_dir = os.path.dirname(katana.native.__path__[0])
         config_json = os.path.join(katana_dir, 'config.json')
         config_json_dict = json.loads(open(config_json).read())
-        pythonpaths=[]
+        pythonpaths=[config_json_dict['pythonsrcdir']]
         for key in config_json_dict.keys():
             if key.startswith('userreposdir'):
                 repo = config_json_dict[key].split('/')
